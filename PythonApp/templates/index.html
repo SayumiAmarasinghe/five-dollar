@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>5-Dollar Lunch</title>
+
+    <style>
+  :root{
+    --bg: #f6f7fb;
+    --card: #ffffff;
+    --text: #111827;
+    --muted: #6b7280;
+    --border: #e5e7eb;
+    --primary: #2563eb;
+    --primary-hover: #1d4ed8;
+    --shadow: 0 10px 30px rgba(0,0,0,.08);
+    --radius: 14px;
+  }
+
+  * { box-sizing: border-box; }
+
+  body{
+    margin: 0;
+    font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    background: radial-gradient(1200px 600px at 10% 0%, #e9efff 0%, var(--bg) 55%, #f8fafc 100%);
+    color: var(--text);
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: 28px 16px;
+  }
+
+  /* Centered card container */
+  .page{
+    width: 100%;
+    max-width: 720px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 28px;
+  }
+
+  h1{
+    margin: 0 0 18px;
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+
+  h1 em{
+    font-style: normal;
+    background: linear-gradient(90deg, #111827, #2563eb);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* Search row */
+  .search-row{
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+
+  #budget_input{
+    flex: 1;
+    height: 44px;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font-size: 15px;
+    outline: none;
+    background: #fbfbfd;
+    transition: border-color .15s ease, box-shadow .15s ease, background .15s ease;
+  }
+
+  #budget_input:focus{
+    border-color: rgba(37, 99, 235, .55);
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, .15);
+    background: #ffffff;
+  }
+
+  button{
+    height: 44px;
+    padding: 0 16px;
+    border: 1px solid rgba(37, 99, 235, .25);
+    border-radius: 10px;
+    background: var(--primary);
+    color: white;
+    font-weight: 600;
+    font-size: 15px;
+    cursor: pointer;
+    transition: transform .05s ease, background .15s ease, box-shadow .15s ease;
+    box-shadow: 0 8px 18px rgba(37, 99, 235, .18);
+    white-space: nowrap;
+  }
+
+  button:hover{
+    background: var(--primary-hover);
+  }
+
+  button:active{
+    transform: translateY(1px);
+    box-shadow: 0 5px 14px rgba(37, 99, 235, .16);
+  }
+
+  /* Result list */
+  #result_list{
+    list-style: none;
+    padding: 0;
+    margin: 18px 0 0;
+    display: grid;
+    gap: 10px;
+  }
+
+  #result_list li{
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 14px;
+    background: #ffffff;
+    box-shadow: 0 1px 0 rgba(17,24,39,.02);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+  }
+
+  #result_list li:hover{
+    border-color: rgba(37, 99, 235, .25);
+    box-shadow: 0 8px 20px rgba(0,0,0,.06);
+  }
+
+  /* Optional: style an empty state if you add a <li class="empty">No results</li> */
+  #result_list li.empty{
+    color: var(--muted);
+    justify-content: center;
+    background: #fafafa;
+  }
+
+  /* Mobile tweaks */
+  @media (max-width: 520px){
+    .page{ padding: 18px; }
+    .search-row{ flex-direction: column; align-items: stretch; }
+    button{ width: 100%; }
+  }
+
+        #result_list li img{
+    width: 64px;
+    height: 64px;
+    flex: 0 0 64px;          /* prevents stretching in flex row */
+    border-radius: 10px;
+    object-fit: cover;       /* crops nicely without distortion */
+    background: #f3f4f6;      /* subtle placeholder bg */
+    border: 1px solid var(--border);
+  }
+
+  /* Optional: if your <li> has text next to the image, keep alignment nice */
+  #result_list li{
+    align-items: center;
+  }
+</style>
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script>
+        function search() {
+            // 1. once click on the search button, grab the budget value
+            console.log("Button is clicked");
+            var budget = $("#budget_input").val();
+            console.log("Budget: " + budget);
+
+            // 2. call the backend server URL /search/<budget> to get the returned results
+            // ajax
+            $.ajax({
+              url: `/search/${encodeURIComponent(budget)}`, // e.g. /search/500
+              method: "GET",
+              dataType: "json", // expect JSON back (change if needed)
+              success: function (data) {
+                // 3. render the resuls under the list
+                $("#result_list").empty();
+                for(var i = 0; i < data.length; i++) {
+                    console.log("test: " + data[i].name);
+                    console.log("test: " + data[i].price);
+                    $("#result_list").append(
+                        "<li>"
+                        + data[i].name + ": " + data[i].price
+                        + "<img src='" + data[i].image_url + "'></img>"
+                        + "</li>");
+                }
+              },
+              error: function (xhr, status, err) {
+                console.error("Error:", status, err, xhr.responseText);
+              }
+            });
+        }
+    </script>
+</head>
+<body>
+    <h1><em>Welcome to 5-Dollar Lunch</em></h1>
+    <input id="budget_input" type="text"></input>
+    <button onclick="search()">Search</button>
+
+    <ul id="result_list">
+
+    </ul>
+</body>
+</html>
