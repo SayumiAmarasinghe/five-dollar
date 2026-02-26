@@ -1,0 +1,30 @@
+name: CD Deploy to EC2
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    # Only deploy if CI passes
+    needs: build 
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Deploy to EC2 via SSH
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ${{ secrets.EC2_USER }}
+        key: ${{ secrets.EC2_SSH_KEY }}
+        port: 22
+        script: |
+          # Navigate to the correct app directory
+          cd ~/five-dollar/PythonApp
+          # Ensure the script has execution permissions
+          chmod +x run.sh
+          # Run the deployment script
+          ./run.sh
