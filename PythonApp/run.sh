@@ -22,7 +22,7 @@ if [ ! -d ".venv" ]; then
     python3.12 -m venv .venv
 fi
 
-# 3. Install/update dependencies using your requirements.txt
+# 3. Insall/update dependencies using your requirements.txt
 echo "Updating dependencies..."
 "$PY" -m pip install -U pip
 "$PY" -m pip install -r requirements.txt
