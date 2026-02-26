@@ -3,7 +3,7 @@ set -euo pipefail
 
 # --- Configuration based on your folder structure ---
 # Using the path observed in your screenshot: PythonApp
-APP_DIR="$HOME/five-dollar"
+APP_DIR="$HOME/five-dollar/PythonApp"
 APP_FILE="five-dollar-app.py"
 # The path to the python binary inside your virtual environment
 PY="$APP_DIR/.venv/bin/python"
